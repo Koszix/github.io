@@ -160,105 +160,108 @@
         <button onclick="openWallet()">💳</button>
         <button onclick="openProfile()">👤</button>
         <button onclick="openTop100()">🏆 Топ-100</button>
+      </div>
 
-</div>
-
-    <div id="welcomeModal" class="modal">
-        <div class="modal-content">
-            <h2>Добро пожаловать!</h2>
-            <p>Пожалуйста, введите ваше имя:</p>
-            <input type="text" id="userName" placeholder="Ваше имя">
-            <button onclick="saveName()">Сохранить</button>
-        </div>
-    </div>
-
-    <div id="topModal" class="top-modal">
-        <div class="top-content">
-            <h2>TOP</h2>
-            <div class="top-list" id="topList">
-                <!-- Список пользователей будет здесь -->
-            </div>
-            <button onclick="closeTop100()">Закрыть</button>
-        </div>
-    </div>
-
-    <script>
-        let score = 0;
-        let userId = generateUserId();
-        let userName = localStorage.getItem('userName');
-
-        // Генерация уникального ID
-        function generateUserId() {
-            return 'user_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        // Показ модального окна при первом заходе
-        if (!userName) {
-            document.getElementById('welcomeModal').style.display = 'flex';
-        }
-
-        // Сохранение имени
-        function saveName() {
-            userName = document.getElementById('userName').value;
-            localStorage.setItem('userName', userName);
-            document.getElementById('welcomeModal').style.display = 'none';
-        }
-
-        // Обработка клика
-        function clickButton() {
-            score += 1;
-            document.getElementById('score').textContent = score;
-        }
-
-        // Открытие кошелька
-        function openWallet() {
-            alert('Функция привязки кошелька в разработке.');
-        }
-
-        // Открытие профиля
-        function openProfile() {
-            alert('Функция профиля в разработке.');
-        }
-
-        // Открытие топа
-        function openTop100() {
-            const topList = document.getElementById('topList');
-            topList.innerHTML = ''; // Очищаем список
-
-            // Пример данных (замените на реальные данные)
-            const users = [
-                { name: 'Игрок 1', score: 100000 },
-                { name: 'Игрок 2', score: 90000 },
-                { name: 'Игрок 3', score: 80000 },
-                // Добавьте больше пользователей
-            ];
-
-            // Сортировка по убыванию
-            users.sort((a, b) => b.score - a.score);
-
-            // Отображение списка
-            users.forEach((user, index) => {
-                const userDiv = document.createElement('div');
-                userDiv.textContent = ${index + 1}-место: ${user.name} - ${user.score}$;
-                topList.appendChild(userDiv);
-            });
-
-            document.getElementById('topModal').style.display = 'flex';
-        }
-
-        // Закрытие топа
-        function closeTop100() {
-            document.getElementById('topModal').style.display = 'none';
-        }
-
-        // Поддержка мультитач
-        document.addEventListener('touchstart', (e) => {
-            if (e.touches.length > 1) {
-                for (let i = 0; i < e.touches.length; i++) {
-                    clickButton();
-                }
-            }
-        });
-    </script>
-</body>
-</html>
+      <div id="welcomeModal" class="modal">
+          <div class="modal-content">
+              <h2>Добро пожаловать!</h2>
+              <p>Пожалуйста, введите ваше имя:</p>
+              <input type="text" id="userName" placeholder="Ваше имя">
+              <button onclick="saveName()">Сохранить</button>
+          </div>
+      </div>
+  
+      <div id="topModal" class="top-modal">
+          <div class="top-content">
+              <h2>TOP</h2>
+              <div class="top-list" id="topList">
+                  <!-- Список пользователей будет здесь -->
+              </div>
+              <button onclick="closeTop100()">Закрыть</button>
+          </div>
+      </div>
+  
+      <script>
+          let score = 0;
+          let userId = generateUserId();
+          let userName = localStorage.getItem('userName');
+  
+          // Генерация уникального ID
+          function generateUserId() {
+              return 'user_' + Math.random().toString(36).substr(2, 9);
+          }
+  
+          // Показ модального окна при первом заходе
+          if (!userName) {
+              document.getElementById('welcomeModal').style.display = 'flex';
+          }
+  
+          // Сохранение имени
+          function saveName() {
+              userName = document.getElementById('userName').value;
+              if (userName.trim() === "") {
+                  alert("Пожалуйста, введите ваше имя.");
+                  return;
+              }
+              localStorage.setItem('userName', userName);
+              document.getElementById('welcomeModal').style.display = 'none';
+          }
+  
+          // Обработка клика
+          function clickButton() {
+              score += 1;
+              document.getElementById('score').textContent = score;
+          }
+  
+          // Открытие кошелька
+          function openWallet() {
+              alert('Функция привязки кошелька в разработке.');
+          }
+  
+          // Открытие профиля
+          function openProfile() {
+              alert('Функция профиля в разработке.');
+          }
+  
+          // Открытие топа
+          function openTop100() {
+              const topList = document.getElementById('topList');
+              topList.innerHTML = ''; // Очищаем список
+  
+              // Пример данных (замените на реальные данные)
+              const users = [
+                  { name: 'Игрок 1', score: 100000 },
+                  { name: 'Игрок 2', score: 90000 },
+                  { name: 'Игрок 3', score: 80000 },
+                  // Добавьте больше пользователей
+              ];
+  
+              // Сортировка по убыванию
+              users.sort((a, b) => b.score - a.score);
+  
+              // Отображение списка
+              users.forEach((user, index) => {
+                  const userDiv = document.createElement('div');
+                  userDiv.textContent = $;{index + 1}"-место:"; $;{user.name} - $;{user.score}$;
+                  topList.appendChild(userDiv);
+              });
+  
+              document.getElementById('topModal').style.display = 'flex';
+          }
+  
+          // Закрытие топа
+          function closeTop100() {
+              document.getElementById('topModal').style.display = 'none';
+          }
+  
+          // Поддержка мультитач
+          document.addEventListener('touchstart', (e) => {
+              if (e.touches.length > 1) {
+                  for (let i = 0; i < e.touches.length; i++) {
+                      clickButton();
+                  }
+              }
+          });
+      </script>
+  </body>
+  </html>
