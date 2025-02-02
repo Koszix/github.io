@@ -241,9 +241,9 @@
   
               // Отображение списка
               users.forEach((user, index) => {
-                  const userDiv = document.createElement('div');
-                  userDiv.textContent = $;{index + 1}"-место:"; $;{user.name} - $;{user.score}$;
-                  topList.appendChild(userDiv);
+                  const userDiv = document.createElement('div'); // Создаем элемент div
+                  userDiv.textContent = `${index + 1}-место: ${user.name} - ${user.score}$` 
+                  topList.appendChild(userDiv); // Добавляем элемент в список
               });
   
               document.getElementById('topModal').style.display = 'flex';
