@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Clicker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #score {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #e74c3c;
+        }
+
+        .ninja-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .ninja-button img {
+            width: 150px;
+            height: 150px;
+        }
+
+        .ninja-button:active {
+            transform: translateY(10px);
+        }
+
+        @keyframes sword-slash {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-30deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .sword-slash {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: url('sword.png') no-repeat center center;
+            background-size: contain;
+            animation: sword-slash 0.2s ease;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ninja Clicker</h1>
+        <p>Your Katanas: <span id="score">0</span></p>
+        <button class="ninja-button" onclick="clickButton()">
+            <img src="ninja.png" alt="Ninja">
+        </button>
+    </div>
+
+    <script>
+        let score = 0;
+
+        // Функция для обработки клика
+        function clickButton() {
+            score += 1;
+            document.getElementById('score').textContent = score;
+
+            // Анимация удара мечом
+            const slash = document.createElement('div');
+            slash.classList.add('sword-slash');
+            document.body.appendChild(slash);
+
+            setTimeout(() => {
+                slash.remove();
+            }, 200);
+        }
+    </script>
+</body>
+</html>
