@@ -17,6 +17,7 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            touch-action: manipulation; /* Отключаем масштабирование */
         }
 
         .container {
@@ -40,6 +41,7 @@
             border: none;
             cursor: pointer;
             transition: transform 0.1s ease;
+            touch-action: none; /* Отключаем стандартное поведение */
         }
 
         .ninja-button img {
@@ -106,6 +108,43 @@
             color: #ecf0f1;
             cursor: pointer;
         }
+
+        .top-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .top-content {
+            background: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .top-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #e74c3c;
+        }
+
+        .top-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .top-list div {
+            padding: 10px;
+            border-bottom: 1px solid #2c3e50;
+        }
     </style>
 </head>
 <body>
@@ -121,7 +160,8 @@
         <button onclick="openWallet()">💳</button>
         <button onclick="openProfile()">👤</button>
         <button onclick="openTop100()">🏆 Топ-100</button>
-    </div>
+
+</div>
 
     <div id="welcomeModal" class="modal">
         <div class="modal-content">
@@ -129,6 +169,16 @@
             <p>Пожалуйста, введите ваше имя:</p>
             <input type="text" id="userName" placeholder="Ваше имя">
             <button onclick="saveName()">Сохранить</button>
+        </div>
+    </div>
+
+    <div id="topModal" class="top-modal">
+        <div class="top-content">
+            <h2>TOP</h2>
+            <div class="top-list" id="topList">
+                <!-- Список пользователей будет здесь -->
+            </div>
+            <button onclick="closeTop100()">Закрыть</button>
         </div>
     </div>
 
@@ -151,8 +201,7 @@
         function saveName() {
             userName = document.getElementById('userName').value;
             localStorage.setItem('userName', userName);
-
-document.getElementById('welcomeModal').style.display = 'none';
+            document.getElementById('welcomeModal').style.display = 'none';
         }
 
         // Обработка клика
@@ -173,8 +222,43 @@ document.getElementById('welcomeModal').style.display = 'none';
 
         // Открытие топа
         function openTop100() {
-            alert('Функция топа в разработке.');
+            const topList = document.getElementById('topList');
+            topList.innerHTML = ''; // Очищаем список
+
+            // Пример данных (замените на реальные данные)
+            const users = [
+                { name: 'Игрок 1', score: 100000 },
+                { name: 'Игрок 2', score: 90000 },
+                { name: 'Игрок 3', score: 80000 },
+                // Добавьте больше пользователей
+            ];
+
+            // Сортировка по убыванию
+            users.sort((a, b) => b.score - a.score);
+
+            // Отображение списка
+            users.forEach((user, index) => {
+                const userDiv = document.createElement('div');
+                userDiv.textContent = ${index + 1}-место: ${user.name} - ${user.score}$;
+                topList.appendChild(userDiv);
+            });
+
+            document.getElementById('topModal').style.display = 'flex';
         }
+
+        // Закрытие топа
+        function closeTop100() {
+            document.getElementById('topModal').style.display = 'none';
+        }
+
+        // Поддержка мультитач
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) {
+                for (let i = 0; i < e.touches.length; i++) {
+                    clickButton();
+                }
+            }
+        });
     </script>
 </body>
 </html>
