@@ -11,47 +11,138 @@
 </head>
 <body>
     <div class="container">
-        <h1>Ninja Clicker</h1>
-        <p>Your Katanas: <span id="score">0</span></p>
-        <button class="ninja-button" onclick="clickButton()">
+        <h1 class="title">Ninja Clicker</h1>
+        <p class="score-text">Your Katanas: <span id="score">0</span></p>
+        <button class="ninja-button" id="clickButton">
             <img src="ninja.png" alt="Ninja">
         </button>
     </div>
 
     <div class="bottom-bar">
-        <button onclick="openWalletPage()">💳 Привязать кошелек</button>
-        <button onclick="openProfile()">👤 Профиль</button>
-        <button onclick="openTop100()">🏆 Топ-100</button>
+        <button class="bottom-button" id="walletButton">💳 Кошелек</button>
+        <button class="bottom-button" id="profileButton">👤 Профиль</button>
+        <button class="bottom-button" id="topButton">🏆 Топ-100</button>
     </div>
 
-    <div id="welcomeModal" class="modal">
+    <div id="welcomeModal" class="modal hidden">
         <div class="modal-content">
             <h2>Добро пожаловать!</h2>
-            <p>Пожалуйста, введите ваше имя:</p>
+            <p>Введите ваше имя:</p>
             <input type="text" id="userName" placeholder="Ваше имя">
-            <button onclick="saveName()">Сохранить</button>
+            <button class="modal-button" id="saveNameButton">Сохранить</button>
         </div>
     </div>
 
-    <div id="walletPage" class="wallet-page">
+    <div id="walletPage" class="wallet-page hidden">
         <div class="wallet-content">
             <h2>Привязка кошелька</h2>
-            <p>Привяжите кошелек, чтобы покупать улучшения:</p>
-            <button onclick="connectWallet()">💳 Привязать кошелек</button>
+            <button class="wallet-button" id="connectWallet">💳 Привязать</button>
             <h2>Купить автокликер</h2>
-            <button onclick="buyAutoClicker('1hour')">⭐️ 1 час (4,20$)</button>
-            <button onclick="buyAutoClicker('4hours')">⭐️ 4 часа (12,30$)</button>
-            <button onclick="buyAutoClicker('16hours')">⭐️ 16 часов (37,10$)</button>
-            <button onclick="closeWalletPage()">Закрыть</button>
+            <button class="wallet-button" id="buyAuto1">⭐ 1 час (4,20$)</button>
+            <button class="wallet-button" id="buyAuto4">⭐ 4 часа (12,30$)</button>
+            <button class="wallet-button" id="buyAuto16">⭐ 16 часов (37,10$)</button>
+            <button class="close-button" id="closeWallet">Закрыть</button>
         </div>
     </div>
 
-    <div id="topModal" class="top-modal">
+    <div id="topModal" class="top-modal hidden">
         <div class="top-content">
-            <h2>TOP</h2>
+            <h2>ТОП-100</h2>
             <div class="top-list" id="topList"></div>
-            <button onclick="closeTop100()">Закрыть</button>
+            <button class="close-button" id="closeTop">Закрыть</button>
         </div>
     </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKyhYxdcZUqz3HJC2NF97FLCuN7bndNH8",
+            authDomain: "ninjatapp00.firebaseapp.com",
+            projectId: "ninjatapp00",
+            storageBucket: "ninjatapp00.firebasestorage.app",
+            messagingSenderId: "253236416484",
+            appId: "1:253236416484:web:db84e76d445fa7d1bdc1f1",
+            measurementId: "G-PF0DESMGR9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+
+        const user = tg.initDataUnsafe.user;
+        const userId = user?.id || 'user_' + Math.random().toString(36).substr(2, 9);
+        const userName = user?.first_name || localStorage.getItem('userName');
+
+        function saveUserData(userId, data) {
+            set(ref(db, 'users/' + userId), data);
+        }
+
+        async function getUserData(userId) {
+            const snapshot = await get(ref(db, 'users/' + userId));
+            return snapshot.val();
+        }
+
+        let score = 0;
+        let upgrades = { clickPower: 1, autoClicker: null };
+
+        async function loadUserData() {
+            const data = await getUserData(userId);
+            if (data) {
+                score = data.score || 0;
+                upgrades = data.upgrades || { clickPower: 1, autoClicker: null };
+                document.getElementById('score').textContent = score;
+            }
+        }
+
+        loadUserData();
+
+        document.getElementById('clickButton').addEventListener('click', () => {
+            score += upgrades.clickPower;
+            document.getElementById('score').textContent = score;
+            saveUserData(userId, { score, name: userName, upgrades });
+        });
+
+        document.getElementById('saveNameButton').addEventListener('click', () => {
+            const inputName = document.getElementById('userName').value.trim();
+            if (!inputName) return alert("Введите ваше имя.");
+            localStorage.setItem('userName', inputName);
+            document.getElementById('welcomeModal').style.display = 'none';
+            location.reload();
+        });
+
+        document.getElementById('walletButton').addEventListener('click', () => {
+            document.getElementById('walletPage').style.display = 'flex';
+        });
+
+        document.getElementById('closeWallet').addEventListener('click', () => {
+            document.getElementById('walletPage').style.display = 'none';
+        });
+
+        document.getElementById('topButton').addEventListener('click', async () => {
+            const topList = document.getElementById('topList');
+            topList.innerHTML = '';
+            const snapshot = await get(ref(db, 'users'));
+            const users = [];
+            snapshot.forEach(child => {
+                const data = child.val();
+                users.push({ id: child.key, name: data.name || "Аноним", score: data.score || 0 });
+            });
+            users.sort((a, b) => b.score - a.score);
+            users.slice(0, 100).forEach((user, index) => {
+                const userDiv = document.createElement('div');
+                userDiv.textContent = `${index + 1}. ${user.name} - ${user.score} Катан`;
+                topList.appendChild(userDiv);
+            });
+            document.getElementById('topModal').style.display = 'flex';
+        });
+
+        document.getElementById('closeTop').addEventListener('click', () => {
+            document.getElementById('topModal').style.display = 'none';
+        });
+    </script>
 </body>
 </html>
