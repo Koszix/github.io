@@ -7,50 +7,49 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <link rel="stylesheet" href="styles.css">
-    <script type="module" src="script.js"></script>
+    <script defer src="script.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Ninja Clicker</h1>
-        <p>Your Katanas: <span id="score">0</span></p>
-        <button class="ninja-button" onclick="clickButton()">
+        <h1 class="title">Ninja Clicker</h1>
+        <p class="score-text">Your Katanas: <span id="score">0</span></p>
+        <button class="ninja-button" id="clickButton">
             <img src="ninja.png" alt="Ninja">
         </button>
     </div>
 
     <div class="bottom-bar">
-        <button onclick="openWalletPage()">💳 Привязать кошелек</button>
-        <button onclick="openProfile()">👤 Профиль</button>
-        <button onclick="openTop100()">🏆 Топ-100</button>
+        <button class="bottom-button" id="walletButton">💳 Кошелек</button>
+        <button class="bottom-button" id="profileButton">👤 Профиль</button>
+        <button class="bottom-button" id="topButton">🏆 Топ-100</button>
     </div>
 
-    <div id="welcomeModal" class="modal">
+    <div id="welcomeModal" class="modal hidden">
         <div class="modal-content">
             <h2>Добро пожаловать!</h2>
-            <p>Пожалуйста, введите ваше имя:</p>
+            <p>Введите ваше имя:</p>
             <input type="text" id="userName" placeholder="Ваше имя">
-            <button onclick="saveName()">Сохранить</button>
+            <button class="modal-button" id="saveNameButton">Сохранить</button>
         </div>
     </div>
 
-    <div id="walletPage" class="wallet-page">
+    <div id="walletPage" class="wallet-page hidden">
         <div class="wallet-content">
             <h2>Привязка кошелька</h2>
-            <p>Привяжите кошелек, чтобы покупать улучшения:</p>
-            <button onclick="connectWallet()">💳 Привязать кошелек</button>
+            <button class="wallet-button" id="connectWallet">💳 Привязать</button>
             <h2>Купить автокликер</h2>
-            <button onclick="buyAutoClicker('1hour')">⭐️ 1 час (4,20$)</button>
-            <button onclick="buyAutoClicker('4hours')">⭐️ 4 часа (12,30$)</button>
-            <button onclick="buyAutoClicker('16hours')">⭐️ 16 часов (37,10$)</button>
-            <button onclick="closeWalletPage()">Закрыть</button>
+            <button class="wallet-button" id="buyAuto1">⭐ 1 час (4,20$)</button>
+            <button class="wallet-button" id="buyAuto4">⭐ 4 часа (12,30$)</button>
+            <button class="wallet-button" id="buyAuto16">⭐ 16 часов (37,10$)</button>
+            <button class="close-button" id="closeWallet">Закрыть</button>
         </div>
     </div>
 
-    <div id="topModal" class="top-modal">
+    <div id="topModal" class="top-modal hidden">
         <div class="top-content">
-            <h2>TOP</h2>
+            <h2>ТОП-100</h2>
             <div class="top-list" id="topList"></div>
-            <button onclick="closeTop100()">Закрыть</button>
+            <button class="close-button" id="closeTop">Закрыть</button>
         </div>
     </div>
 </body>
