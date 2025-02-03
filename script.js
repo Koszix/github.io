@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Анимация клика (Anime.js)
         anime({
             targets: "#clickButton",
-            scale: [1, 1.2, 1],
-            duration: 200,
+            scale: [1, 1.1, 1],
+            duration: 150,
             easing: "easeInOutQuad",
         });
     });
@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p>1. NinjaMaster - 9999 катан</p>
                 <p>2. SamuraiX - 8765 катан</p>
                 <p>3. ShogunY - 7654 катан</p>
-                <p>👤 Ты: ${score} катан</p>
+                <p>4. RoninD - 5000 катан</p>
+                <p>5. ShadowZ - 3500 катан</p>
             `;
         }, 1000);
     }
