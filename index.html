@@ -10,26 +10,43 @@
     <script defer src="script.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1 class="title">Ninja Clicker</h1>
-        <p class="score-text">Your Katanas: <span id="score">0</span></p>
-        <button class="ninja-button" id="clickButton">
-            <img src="ninja.png" alt="Ninja">
-        </button>
-    </div>
-
-    <div class="bottom-bar">
-        <button class="bottom-button" id="walletButton">💳 Кошелек</button>
-        <button class="bottom-button" id="profileButton">👤 Профиль</button>
-        <button class="bottom-button" id="topButton">🏆 Топ-100</button>
-    </div>
-
-    <div id="topModal" class="top-modal hidden">
-        <div class="top-content">
-            <h2>ТОП-100</h2>
-            <div class="top-list" id="topList"></div>
-            <button class="close-button" id="closeTop">Закрыть</button>
+    <div class="page active" id="homePage">
+        <div class="container">
+            <h1 class="title">Ninja Clicker</h1>
+            <p class="score-text">Your Katanas: <span id="score">0</span></p>
+            <button class="ninja-button" id="clickButton">
+                <img src="ninja.png" alt="Ninja">
+            </button>
         </div>
+
+        <div class="bottom-bar">
+            <button class="bottom-button" id="walletButton">💳 Кошелек</button>
+            <button class="bottom-button" id="profileButton">👤 Профиль</button>
+            <button class="bottom-button" id="topButton">🏆 Топ-100</button>
+        </div>
+    </div>
+
+    <!-- Вкладка ТОП-100 -->
+    <div class="page hidden" id="topPage">
+        <h2>ТОП-100 Игроков</h2>
+        <div class="top-list" id="topList"></div>
+        <button class="back-button" id="backToHome1">🔙 Назад</button>
+    </div>
+
+    <!-- Вкладка Профиля -->
+    <div class="page hidden" id="profilePage">
+        <h2>👤 Ваш профиль</h2>
+        <p>Имя: <span id="playerName">Неизвестно</span></p>
+        <p>Катаны: <span id="profileScore">0</span></p>
+        <button class="back-button" id="backToHome2">🔙 Назад</button>
+    </div>
+
+    <!-- Вкладка Кошелька -->
+    <div class="page hidden" id="walletPage">
+        <h2>💳 Магазин</h2>
+        <button class="wallet-button">⭐ Купить катаны</button>
+        <button class="wallet-button">🔥 Авто-кликер</button>
+        <button class="back-button" id="backToHome3">🔙 Назад</button>
     </div>
 </body>
 </html>

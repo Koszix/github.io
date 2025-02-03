@@ -3,21 +3,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const scoreElement = document.getElementById("score");
     const clickButton = document.getElementById("clickButton");
     const topButton = document.getElementById("topButton");
-    const topModal = document.getElementById("topModal");
+    const walletButton = document.getElementById("walletButton");
+    const profileButton = document.getElementById("profileButton");
+    const backToHome1 = document.getElementById("backToHome1");
+    const backToHome2 = document.getElementById("backToHome2");
+    const backToHome3 = document.getElementById("backToHome3");
     const topList = document.getElementById("topList");
-    const closeTopButton = document.getElementById("closeTop");
+    const profileScore = document.getElementById("profileScore");
+    const playerName = document.getElementById("playerName");
 
-    // 🔄 Обновление счета на старте
+    // Обновление счета на старте
     scoreElement.textContent = score;
+    profileScore.textContent = score;
 
-    // ⚔️ Клик (поддержка мультитач)
+    // Мультитач клик
     clickButton.addEventListener("pointerdown", (event) => {
         event.preventDefault();
         score++;
         scoreElement.textContent = score;
+        profileScore.textContent = score;
         localStorage.setItem("score", score);
 
-        // Анимация клика (Anime.js)
         anime({
             targets: "#clickButton",
             scale: [1, 1.1, 1],
@@ -26,18 +32,34 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 🏆 Открытие ТОП-100
+    // Функция переключения страниц
+    function switchPage(showId) {
+        document.querySelectorAll(".page").forEach(page => {
+            page.classList.add("hidden");
+        });
+        document.getElementById(showId).classList.remove("hidden");
+    }
+
+    // Открытие вкладок
     topButton.addEventListener("click", () => {
-        topModal.classList.remove("hidden");
+        switchPage("topPage");
         updateTopList();
     });
 
-    // ❌ Закрытие ТОП-100
-    closeTopButton.addEventListener("click", () => {
-        topModal.classList.add("hidden");
+    walletButton.addEventListener("click", () => {
+        switchPage("walletPage");
     });
 
-    // 🔄 Обновление ТОП-100
+    profileButton.addEventListener("click", () => {
+        switchPage("profilePage");
+    });
+
+    // Кнопки назад
+    backToHome1.addEventListener("click", () => switchPage("homePage"));
+    backToHome2.addEventListener("click", () => switchPage("homePage"));
+    backToHome3.addEventListener("click", () => switchPage("homePage"));
+
+    // Обновление ТОП-100
     function updateTopList() {
         topList.innerHTML = "<p>Загрузка...</p>";
 
