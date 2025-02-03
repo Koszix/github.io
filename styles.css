@@ -3,6 +3,9 @@ body {
     text-align: center;
     background: linear-gradient(to bottom, #1a1a1a, #333);
     color: white;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 .container {
@@ -18,11 +21,13 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+    display: block;
+    margin: 50px auto;
     transition: transform 0.2s ease-in-out;
 }
 
 .ninja-button img {
-    width: 100px;
+    width: 200px;
 }
 
 .ninja-button:active {

@@ -1,36 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
-    let score = 0;
+    let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
     const scoreElement = document.getElementById("score");
     const clickButton = document.getElementById("clickButton");
-    const welcomeModal = document.getElementById("welcomeModal");
-    const userNameInput = document.getElementById("userName");
-    const saveNameButton = document.getElementById("saveNameButton");
+    const topButton = document.getElementById("topButton");
     const topModal = document.getElementById("topModal");
     const topList = document.getElementById("topList");
-    const topButton = document.getElementById("topButton");
     const closeTopButton = document.getElementById("closeTop");
 
-    // 🎴 Проверка имени пользователя
-    if (!localStorage.getItem("userName")) {
-        welcomeModal.classList.remove("hidden");
-    } else {
-        alert(`Привет, ${localStorage.getItem("userName")}!`);
-    }
+    // 🔄 Обновление счета на старте
+    scoreElement.textContent = score;
 
-    // 💾 Сохранение имени
-    saveNameButton.addEventListener("click", () => {
-        const name = userNameInput.value.trim();
-        if (name) {
-            localStorage.setItem("userName", name);
-            welcomeModal.classList.add("hidden");
-            alert(`Добро пожаловать, ${name}!`);
-        }
-    });
-
-    // ⚔️ Клик по ниндзя
-    clickButton.addEventListener("click", () => {
+    // ⚔️ Клик (поддержка мультитач)
+    clickButton.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
         score++;
         scoreElement.textContent = score;
+        localStorage.setItem("score", score);
 
         // Анимация клика (Anime.js)
         anime({
@@ -61,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p>1. NinjaMaster - 9999 катан</p>
                 <p>2. SamuraiX - 8765 катан</p>
                 <p>3. ShogunY - 7654 катан</p>
+                <p>👤 Ты: ${score} катан</p>
             `;
         }, 1000);
     }
