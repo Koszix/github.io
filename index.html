@@ -9,7 +9,6 @@
         // Импорт Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
 
         // Конфигурация Firebase
         const firebaseConfig = {
@@ -25,7 +24,6 @@
         // Инициализация Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const analytics = getAnalytics(app);
 
         // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
@@ -47,27 +45,30 @@
         }
 
         // Получение данных пользователя
-        function getUserData(userId, callback) {
-            get(ref(db, 'users/' + userId)).then((snapshot) => {
-                callback(snapshot.val());
-            });
+        async function getUserData(userId) {
+            const snapshot = await get(ref(db, 'users/' + userId));
+            return snapshot.val();
         }
 
         // Загрузка данных при запуске
         let score = 0;
-        let upgrades = { clickPower: 1, autoClicker: false }; // Автокликер изначально отключен
-        getUserData(userId, (data) => {
+        let upgrades = { clickPower: 1, autoClicker: null }; // Автокликер изначально отключен
+
+        async function loadUserData() {
+            const data = await getUserData(userId);
             if (data) {
                 score = data.score || 0;
-                upgrades = data.upgrades || { clickPower: 1, autoClicker: false };
+                upgrades = data.upgrades || { clickPower: 1, autoClicker: null };
                 document.getElementById('score').textContent = score;
 
-                // Запуск автокликера, если он куплен
+                // Запуск автокликера, если он активен
                 if (upgrades.autoClicker) {
-                    startAutoClicker();
+                    startAutoClicker(upgrades.autoClicker);
                 }
             }
-        });
+        }
+
+        loadUserData();
 
         // Показ модального окна при первом заходе
         if (!userName) {
@@ -94,28 +95,67 @@
         }
 
         // Автокликер
-        function startAutoClicker() {
-            setInterval(() => {
-                if (upgrades.autoClicker) {
-                    score += 1; // Автокликер добавляет 1 Катану каждую секунду
-                    document.getElementById('score').textContent = score;
-                    saveUserData(userId, { score: score, name: userName, upgrades: upgrades });
-                }
-            }, 1000); // Клик каждую секунду
+        function startAutoClicker(autoClickerConfig) {
+            const { interval, katanasPerClick, duration } = autoClickerConfig;
+
+            const intervalId = setInterval(() => {
+                score += katanasPerClick;
+                document.getElementById('score').textContent = score;
+                saveUserData(userId, { score: score, name: userName, upgrades: upgrades });
+            }, interval * 1000);
+
+            // Остановка автокликера через указанное время
+            setTimeout(() => {
+                clearInterval(intervalId);
+                upgradesicker = null;
+                saveUserData(userId, { score: score, name: userName, upgrades: upgrades });
+                alert("Автокликер закончил свою работу.");
+            }, duration * 60 * 60 * 1000); // Преобразуем часы в миллисекунды
         }
 
         // Покупка автокликера через Telegram Pay
-        function toClicker() {
-            tg.showInvoice({
-                title: "Покупка автокликера",
-                description: "Автокликер будет добавлять 1 Катану каждую секунду.",
-                currency: "USD",
-                prices: [{ label: "Автокликер", amount: "100" }] // Стоимость: 1 USD
-            }, (status) => {
+        function buyAutoClicker(type) {
+            const options = {
+                "1hour": {
+                    title: "Автокликер на 1 час",
+                    description: "Кликает каждые 10 секунд по 1 Катане.",
+                    currency: "USD",
+                    prices: [{ label: "1 час", amount: "420" }], // 4,20$
+                    interval: 10,
+                    katanasPerClick: 1,
+                    duration: 1 // 1 час
+                },
+                "4hours": {
+                    title: "Автокликер на 4 часа",
+                    description: "Кликает каждые 5 секунд по 2 Катаны.",
+                    currency: "USD",
+                    prices: [{ label: "4 часа", amount: "1230" }], // 12,30$
+                    interval: 5,
+                    katanasPerClick: 2,
+                    duration: 4 // 4 часа
+                },
+                "16hours": {
+                    title: "Автокликер на 16 часов",
+                    description: "Кликает каждые 3 секунды по 3 Катаны.",
+                    currency: "USD",
+                    prices: [{ label: "16 часов", amount: "3710" }], // 37,10$
+                    interval: 3,
+                    katanasPerClick: 3,
+                    duration: 16 // 16 часов
+                }
+            };
+
+            const selectedOption = options[type];
+
+            tg.showInvoice(selectedOption, (status) => {
                 if (status === "paid") {
-                    upgrades.autoClicker = true;
+                    upgrades.autoClicker = {
+                        interval: selectedOption.interval,
+                        katanasPerClick: selectedOption.katanasPerClick,
+                        duration: selectedOption.duration
+                    };
                     saveUserData(userId, { score: score, name: userName, upgrades: upgrades });
-                    startAutoClicker();
+                    startAutoClicker(upgrades.autoClicker);
                     alert("Автокликер успешно куплен!");
                 } else {
                     alert("Оплата не прошла.");
@@ -172,7 +212,9 @@
     <div class="bottom-bar">
         <button onclick="openWallet()">💳</button>
         <button onclick="openProfile()">👤</button>
-        <button onclick="buyAutoClicker()">⭐ Купить автокликер</button>
+        <button onclick="buyAutoClicker('1hour')">⭐ 1 час (4,20$)</button>
+        <button onclick="buyAutoClicker('4hours')">⭐ 4 часа (12,30$)</button>
+        <button onclick="buyAutoClicker('16hours')">⭐ 16 часов (37,10$)</button>
         <button onclick="openTop100()">🏆 Топ-100</button>
     </div>
 
@@ -180,7 +222,9 @@
         <div class="modal-content">
             <h2>Добро пожаловать!</h2>
             <p>Пожалуйста, введите ваше имя:</p>
-            <input type="text" id="userName" placeholder="Ваше имя">
+            <input
+            
+type="text" id="userName" placeholder="Ваше имя">
             <button onclick="saveName()">Сохранить</button>
         </div>
     </div>
@@ -205,4 +249,4 @@
         </div>
     </div>
 </body>
-</html> buyAu
+</html>.autoCl
