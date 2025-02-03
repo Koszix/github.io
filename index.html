@@ -16,6 +16,7 @@
         <button class="ninja-button" id="clickButton">
             <img src="ninja.png" alt="Ninja">
         </button>
+        <p class="combo-text" id="comboText">Комбо: x1</p>
     </div>
 
     <div class="bottom-bar">
@@ -24,24 +25,19 @@
         <button class="bottom-button" id="topButton">🏆 Топ-100</button>
     </div>
 
-    <div id="welcomeModal" class="modal hidden">
-        <div class="modal-content">
-            <h2>Добро пожаловать!</h2>
-            <p>Введите ваше имя:</p>
-            <input type="text" id="userName" placeholder="Ваше имя">
-            <button class="modal-button" id="saveNameButton">Сохранить</button>
+    <div id="dailyBonus" class="bonus-modal hidden">
+        <div class="bonus-content">
+            <h2>🎁 Ежедневный бонус!</h2>
+            <p>Вы получили 100 катан!</p>
+            <button class="bonus-button" id="collectBonus">Забрать</button>
         </div>
     </div>
 
-    <div id="walletPage" class="wallet-page hidden">
-        <div class="wallet-content">
-            <h2>Привязка кошелька</h2>
-            <button class="wallet-button" id="connectWallet">💳 Привязать</button>
-            <h2>Купить автокликер</h2>
-            <button class="wallet-button" id="buyAuto1">⭐ 1 час (4,20$)</button>
-            <button class="wallet-button" id="buyAuto4">⭐ 4 часа (12,30$)</button>
-            <button class="wallet-button" id="buyAuto16">⭐ 16 часов (37,10$)</button>
-            <button class="close-button" id="closeWallet">Закрыть</button>
+    <div id="eventBanner" class="event-modal hidden">
+        <div class="event-content">
+            <h2>🔥 Неделя самураев!</h2>
+            <p>Все клики дают +50% катан!</p>
+            <button class="event-button" id="closeEvent">OK</button>
         </div>
     </div>
 
@@ -52,97 +48,5 @@
             <button class="close-button" id="closeTop">Закрыть</button>
         </div>
     </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDKyhYxdcZUqz3HJC2NF97FLCuN7bndNH8",
-            authDomain: "ninjatapp00.firebaseapp.com",
-            projectId: "ninjatapp00",
-            storageBucket: "ninjatapp00.firebasestorage.app",
-            messagingSenderId: "253236416484",
-            appId: "1:253236416484:web:db84e76d445fa7d1bdc1f1",
-            measurementId: "G-PF0DESMGR9"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-
-        const user = tg.initDataUnsafe.user;
-        const userId = user?.id || 'user_' + Math.random().toString(36).substr(2, 9);
-        const userName = user?.first_name || localStorage.getItem('userName');
-
-        function saveUserData(userId, data) {
-            set(ref(db, 'users/' + userId), data);
-        }
-
-        async function getUserData(userId) {
-            const snapshot = await get(ref(db, 'users/' + userId));
-            return snapshot.val();
-        }
-
-        let score = 0;
-        let upgrades = { clickPower: 1, autoClicker: null };
-
-        async function loadUserData() {
-            const data = await getUserData(userId);
-            if (data) {
-                score = data.score || 0;
-                upgrades = data.upgrades || { clickPower: 1, autoClicker: null };
-                document.getElementById('score').textContent = score;
-            }
-        }
-
-        loadUserData();
-
-        document.getElementById('clickButton').addEventListener('click', () => {
-            score += upgrades.clickPower;
-            document.getElementById('score').textContent = score;
-            saveUserData(userId, { score, name: userName, upgrades });
-        });
-
-        document.getElementById('saveNameButton').addEventListener('click', () => {
-            const inputName = document.getElementById('userName').value.trim();
-            if (!inputName) return alert("Введите ваше имя.");
-            localStorage.setItem('userName', inputName);
-            document.getElementById('welcomeModal').style.display = 'none';
-            location.reload();
-        });
-
-        document.getElementById('walletButton').addEventListener('click', () => {
-            document.getElementById('walletPage').style.display = 'flex';
-        });
-
-        document.getElementById('closeWallet').addEventListener('click', () => {
-            document.getElementById('walletPage').style.display = 'none';
-        });
-
-        document.getElementById('topButton').addEventListener('click', async () => {
-            const topList = document.getElementById('topList');
-            topList.innerHTML = '';
-            const snapshot = await get(ref(db, 'users'));
-            const users = [];
-            snapshot.forEach(child => {
-                const data = child.val();
-                users.push({ id: child.key, name: data.name || "Аноним", score: data.score || 0 });
-            });
-            users.sort((a, b) => b.score - a.score);
-            users.slice(0, 100).forEach((user, index) => {
-                const userDiv = document.createElement('div');
-                userDiv.textContent = `${index + 1}. ${user.name} - ${user.score} Катан`;
-                topList.appendChild(userDiv);
-            });
-            document.getElementById('topModal').style.display = 'flex';
-        });
-
-        document.getElementById('closeTop').addEventListener('click', () => {
-            document.getElementById('topModal').style.display = 'none';
-        });
-    </script>
 </body>
 </html>
