@@ -1,9 +1,32 @@
 import anime from 'https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js';
 
-let score = 0;
+let score = parseInt(localStorage.getItem('score')) || 0;
 let comboMultiplier = 1;
 let lastClickTime = 0;
+let userName = localStorage.getItem('userName') || '';
 
+document.getElementById('score').textContent = score;
+
+// Проверка на первый вход
+document.addEventListener('DOMContentLoaded', () => {
+    if (!userName) {
+        document.getElementById('welcomeModal').classList.remove('hidden');
+    } else {
+        alert(`С возвращением, ${userName}!`);
+    }
+});
+
+// Сохранение имени пользователя
+document.getElementById('saveNameButton').addEventListener('click', () => {
+    const inputName = document.getElementById('userName').value.trim();
+    if (!inputName) return alert("Введите ваше имя.");
+    userName = inputName;
+    localStorage.setItem('userName', userName);
+    document.getElementById('welcomeModal').classList.add('hidden');
+    alert(`Добро пожаловать, ${userName}!`);
+});
+
+// Логика кликов с комбо
 document.getElementById('clickButton').addEventListener('click', () => {
     let now = Date.now();
     if (now - lastClickTime < 500) {
@@ -16,6 +39,7 @@ document.getElementById('clickButton').addEventListener('click', () => {
     score += comboMultiplier;
     document.getElementById('score').textContent = score;
     document.getElementById('comboText').textContent = `Комбо: x${comboMultiplier}`;
+    localStorage.setItem('score', score);
 
     anime({
         targets: '#clickButton img',
@@ -25,22 +49,36 @@ document.getElementById('clickButton').addEventListener('click', () => {
     });
 });
 
-document.getElementById('collectBonus').addEventListener('click', () => {
-    score += 100;
-    document.getElementById('score').textContent = score;
-    document.getElementById('dailyBonus').classList.add('hidden');
+// Анимированное открытие ТОП-100
+document.getElementById('topButton').addEventListener('click', async () => {
+    const topList = document.getElementById('topList');
+    topList.innerHTML = '';
+
+    // Заглушка данных (замени на запрос к Firebase)
+    const users = [
+        { name: "Сенсей", score: 9999 },
+        { name: "Тень", score: 8500 },
+        { name: "Самурай", score: 7500 }
+    ];
+    
+    users.forEach((user, index) => {
+        const userDiv = document.createElement('div');
+        userDiv.textContent = `${index + 1}. ${user.name} - ${user.score} Катан`;
+        userDiv.style.opacity = '0';
+        topList.appendChild(userDiv);
+    });
+
+    document.getElementById('topModal').classList.remove('hidden');
+
+    anime({
+        targets: '#topList div',
+        opacity: [0, 1],
+        translateY: [20, 0],
+        delay: anime.stagger(100)
+    });
 });
 
-document.getElementById('closeEvent').addEventListener('click', () => {
-    document.getElementById('eventBanner').classList.add('hidden');
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        document.getElementById('dailyBonus').classList.remove('hidden');
-    }, 2000);
-
-    setTimeout(() => {
-        document.getElementById('eventBanner').classList.remove('hidden');
-    }, 5000);
+// Закрытие ТОП-100
+document.getElementById('closeTop').addEventListener('click', () => {
+    document.getElementById('topModal').classList.add('hidden');
 });
